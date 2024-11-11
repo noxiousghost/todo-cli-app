@@ -28,16 +28,6 @@ program
       isArchived: false,
     };
 
-    // const dirPath = path.resolve(__dirname, '../jsons/');
-    // const filePath = path.join(dirPath, '/tasks.json');
-    // // create folder and file if they doesn't already exists
-    // if (!fs.existsSync(dirPath)) {
-    //   fs.mkdirSync(dirPath);
-    // }
-    // if (!fs.existsSync(filePath)) {
-    //   fs.writeFileSync(filePath, '');
-    // }
-
     fs.readFile(filePath, 'utf-8', (err, data) => {
       let tasks: Task[] = [];
       if (!err && data.trim() !== '') {
