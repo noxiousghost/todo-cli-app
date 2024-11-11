@@ -1,10 +1,11 @@
 import { Command } from 'commander';
 import { Task, TaskStatus } from './interface/task.interface';
 import { v4 as uuidv4 } from 'uuid';
-import path from 'path';
+import { filePath, checkFilePath } from './utils/checkFile';
 import fs from 'fs';
 
 const program = new Command();
+checkFilePath();
 
 program
   .name('todo-cli')
@@ -27,15 +28,15 @@ program
       isArchived: false,
     };
 
-    const dirPath = path.resolve(__dirname, '../jsons/');
-    const filePath = path.join(dirPath, '/tasks.json');
-    // create folder and file if they doesn't already exists
-    if (!fs.existsSync(dirPath)) {
-      fs.mkdirSync(dirPath);
-    }
-    if (!fs.existsSync(filePath)) {
-      fs.writeFileSync(filePath, '');
-    }
+    // const dirPath = path.resolve(__dirname, '../jsons/');
+    // const filePath = path.join(dirPath, '/tasks.json');
+    // // create folder and file if they doesn't already exists
+    // if (!fs.existsSync(dirPath)) {
+    //   fs.mkdirSync(dirPath);
+    // }
+    // if (!fs.existsSync(filePath)) {
+    //   fs.writeFileSync(filePath, '');
+    // }
 
     fs.readFile(filePath, 'utf-8', (err, data) => {
       let tasks: Task[] = [];
