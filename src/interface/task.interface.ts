@@ -1,9 +1,9 @@
 export enum TaskStatus {
-  inProgress = 'IN PROGRESS',
-  todo = 'TODO',
-  complete = 'COMPLETE',
+  IN_PROGRESS = 'IN_PROGRESS',
+  TODO = 'TODO',
+  COMPLETE = 'COMPLETE',
 }
-export interface ITask {
+export interface Task {
   id: string;
   name: string;
   deadline: Date;

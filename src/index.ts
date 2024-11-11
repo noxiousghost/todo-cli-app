@@ -1,5 +1,5 @@
 import { Command } from 'commander';
-import { ITask, TaskStatus } from './interface/task.interface';
+import { Task, TaskStatus } from './interface/task.interface';
 import { v4 as uuidv4 } from 'uuid';
 import path from 'path';
 import fs from 'fs';
@@ -18,11 +18,11 @@ program
   .requiredOption('-d, --deadline <string>', 'Task deadline (YYYY-MM-DD)')
   .option('-t, --tags <tags...>', 'List of tags')
   .action((options) => {
-    const newTask: ITask = {
+    const newTask: Task = {
       id: uuidv4(),
       name: options.name,
       deadline: new Date(options.deadline),
-      status: TaskStatus.todo,
+      status: TaskStatus.TODO,
       tags: options.tags || [],
       isArchived: false,
     };
@@ -38,7 +38,7 @@ program
     }
 
     fs.readFile(filePath, 'utf-8', (err, data) => {
-      let tasks: ITask[] = [];
+      let tasks: Task[] = [];
       if (!err && data.trim() !== '') {
         try {
           tasks = JSON.parse(data);
