@@ -1,5 +1,5 @@
 import { Command } from 'commander';
-import { ITask, taskStatus } from './interface/task.interface';
+import { ITask, TaskStatus } from './interface/task.interface';
 import { v4 as uuidv4 } from 'uuid';
 import path from 'path';
 import fs from 'fs';
@@ -22,7 +22,7 @@ program
       id: uuidv4(),
       name: options.name,
       deadline: new Date(options.deadline),
-      status: taskStatus.todo,
+      status: TaskStatus.todo,
       tags: options.tags || [],
       isArchived: false,
     };
