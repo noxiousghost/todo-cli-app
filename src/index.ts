@@ -1,8 +1,6 @@
 import { Command } from 'commander';
-import { Task, TaskStatus } from './interface/task.interface';
-import { v4 as uuidv4 } from 'uuid';
-import { filePath, checkFilePath } from './utils/checkFile';
-import fs from 'fs';
+import { createTask } from './controllers/tasks.controller';
+import { checkFilePath } from './utils/checkFile';
 
 const program = new Command();
 checkFilePath();
@@ -18,34 +16,6 @@ program
   .requiredOption('-n, --name <string>', 'Task name')
   .requiredOption('-d, --deadline <string>', 'Task deadline (YYYY-MM-DD)')
   .option('-t, --tags <tags...>', 'List of tags')
-  .action((options) => {
-    const newTask: Task = {
-      id: uuidv4(),
-      name: options.name,
-      deadline: new Date(options.deadline),
-      status: TaskStatus.TODO,
-      tags: options.tags || [],
-      isArchived: false,
-    };
-
-    fs.readFile(filePath, 'utf-8', (err, data) => {
-      let tasks: Task[] = [];
-      if (!err && data.trim() !== '') {
-        try {
-          tasks = JSON.parse(data);
-        } catch (error) {
-          console.error(error);
-        }
-      }
-      tasks.push(newTask);
-      fs.writeFile(filePath, JSON.stringify(tasks, null, 2), 'utf-8', (err) => {
-        if (err) {
-          console.error('Error writing task:', err);
-        } else {
-          console.log('New task added:', newTask);
-        }
-      });
-    });
-  });
+  .action(createTask);
 
 program.parse(process.argv);
