@@ -1,4 +1,4 @@
-import { Task, TaskStatus } from '../interface/task.interface';
+import { Task, TaskStatus } from '../interface/task.type';
 import { v4 as uuidv4 } from 'uuid';
 import { filePath } from '../utils/checkFile';
 import { writeJsonFile, readJsonFile } from '../utils/jsonOperations';

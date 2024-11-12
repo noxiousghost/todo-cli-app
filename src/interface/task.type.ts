@@ -3,11 +3,12 @@ export enum TaskStatus {
   TODO = 'TODO',
   COMPLETE = 'COMPLETE',
 }
-export interface Task {
+
+export type Task = {
   id: string;
   name: string;
   deadline: Date;
   status: TaskStatus;
   tags: string[];
   isArchived: boolean;
-}
+};

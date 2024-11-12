@@ -1,6 +1,6 @@
 import util from 'util';
 import fs from 'fs';
-import { Task } from '../interface/task.interface';
+import { Task } from '../interface/task.type';
 const writeFile = util.promisify(fs.writeFile);
 const readFile = util.promisify(fs.readFile);
 
