@@ -10,6 +10,6 @@ export const checkFilePath = (): void => {
     fs.mkdirSync(dirPath);
   }
   if (!fs.existsSync(filePath)) {
-    fs.writeFileSync(filePath, '');
+    fs.writeFileSync(filePath, JSON.stringify([]));
   }
 };
