@@ -15,7 +15,10 @@ export const createTask = async (options: z.infer<Omit<typeof taskSchema, 'statu
       isArchived: false,
     };
     let tasks = [];
-
+    if (new Date(newTask.deadline) < new Date()) {
+      console.error('Deadline should be future date/time');
+      return;
+    }
     const parsedTask = taskSchema.safeParse(newTask);
     if (!parsedTask.success) {
       console.error('Validation failed:', parsedTask.error.flatten());
