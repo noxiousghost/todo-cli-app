@@ -1,11 +1,10 @@
 import util from 'util';
-import { z } from 'zod';
 import fs from 'fs';
-import { taskSchema } from '../model/zod.schema';
+import { Task } from '../model/zod.schema';
 const writeFile = util.promisify(fs.writeFile);
 const readFile = util.promisify(fs.readFile);
 
-export const readJsonFile = async (filePath: string): Promise<z.infer<typeof taskSchema>[]> => {
+export const readJsonFile = async (filePath: string): Promise<Task[]> => {
   if (!fs.existsSync(filePath)) {
     throw new Error('JSON file not found');
   }
@@ -19,7 +18,7 @@ export const readJsonFile = async (filePath: string): Promise<z.infer<typeof tas
   return data ? JSON.parse(data) : [];
 };
 
-export const writeJsonFile = async (filePath: string, allTasks: z.infer<typeof taskSchema>[]): Promise<void> => {
+export const writeJsonFile = async (filePath: string, allTasks: Task[]): Promise<void> => {
   if (!fs.existsSync(filePath)) {
     throw new Error('JSON file not found');
   }

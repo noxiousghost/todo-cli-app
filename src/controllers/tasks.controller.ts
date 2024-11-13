@@ -1,12 +1,11 @@
-import { z } from 'zod';
-import { TaskStatus, taskSchema } from '../model/zod.schema';
+import { TaskStatus, Task, TaskSchema } from '../model/zod.schema';
 import { v4 as uuidv4 } from 'uuid';
 import { filePath } from '../utils/checkFile';
 import { writeJsonFile, readJsonFile } from '../utils/jsonOperations';
 
-export const createTask = async (options: z.infer<Omit<typeof taskSchema, 'status' | 'isArchived'>>): Promise<void> => {
+export const createTask = async (options: Omit<Task, 'status' | 'isArchived'>): Promise<void> => {
   try {
-    const newTask: z.infer<typeof taskSchema> = {
+    const newTask: Task = {
       id: uuidv4(),
       name: options.name,
       deadline: new Date(options.deadline),
@@ -14,8 +13,8 @@ export const createTask = async (options: z.infer<Omit<typeof taskSchema, 'statu
       tags: options.tags,
       isArchived: false,
     };
-    let tasks = [];
-    const parsedTask = taskSchema.safeParse(newTask);
+    let tasks: Task[] = [];
+    const parsedTask = TaskSchema.safeParse(newTask);
     if (!parsedTask.success) {
       console.error('Validation failed:', parsedTask.error.flatten());
       return;
