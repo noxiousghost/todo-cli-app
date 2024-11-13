@@ -21,7 +21,6 @@ export const createTask = async (options: z.infer<Omit<typeof taskSchema, 'statu
       return;
     }
     const readJsonRes = await readJsonFile(filePath);
-    console.log(typeof readJsonRes);
     tasks = readJsonRes;
     tasks.push(newTask);
 
