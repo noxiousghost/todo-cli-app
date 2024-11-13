@@ -9,7 +9,9 @@ export enum TaskStatus {
 export const taskSchema = z.object({
   id: z.string().uuid(),
   name: z.string().min(1, { message: 'Task name cannot be empty' }),
-  deadline: z.date(),
+  deadline: z.date().refine((date) => date > new Date(), {
+    message: 'Deadline should be future date/time',
+  }),
   status: z.nativeEnum(TaskStatus),
   tags: z.array(z.string()).nonempty({ message: 'Please add at least one tag' }),
   isArchived: z.boolean(),
