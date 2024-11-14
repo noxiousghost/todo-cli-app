@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
-export const dirPath = path.resolve(__dirname, '../jsons/');
+export const dirPath = path.resolve(__dirname, '@src/jsons/');
 export const filePath = path.join(dirPath, '/tasks.json');
 
 export const checkFilePath = (): void => {

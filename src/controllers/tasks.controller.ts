@@ -1,7 +1,7 @@
-import { Task, TaskStatus } from '../interface/task.type';
+import { Task, TaskStatus } from '@src/interface/task.type';
 import { v4 as uuidv4 } from 'uuid';
-import { filePath } from '../utils/checkFile';
-import { writeJsonFile, readJsonFile } from '../utils/jsonOperations';
+import { filePath } from '@src/utils/checkFile';
+import { writeJsonFile, readJsonFile } from '@src/utils/jsonOperations';
 
 export const createTask = async (options: Omit<Task, 'status' | 'isArchived'>): Promise<void> => {
   const newTask: Task = {

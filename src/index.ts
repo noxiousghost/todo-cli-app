@@ -1,6 +1,6 @@
 import { Command } from 'commander';
-import { createTask } from './controllers/tasks.controller';
-import { checkFilePath } from './utils/checkFile';
+import { createTask } from '@src/controllers/tasks.controller';
+import { checkFilePath } from '@src/utils/checkFile';
 
 const program = new Command();
 checkFilePath();
