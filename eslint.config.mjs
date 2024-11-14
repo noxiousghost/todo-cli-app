@@ -58,5 +58,6 @@ export default [
       '@typescript-eslint/explicit-function-return-type': 'warn',
       '@typescript-eslint/no-explicit-any': 'error',
     },
+    exclude: ['node_modules', '/dist/*'],
   },
 ];
