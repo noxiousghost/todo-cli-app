@@ -1,16 +1,13 @@
-import util from 'util';
-import fs from 'fs';
+import { promises as fs } from 'fs';
 import { Task } from '@src/interface/task.type';
-import { filePath } from './checkFile';
-
-const writeFile = util.promisify(fs.writeFile);
-const readFile = util.promisify(fs.readFile);
+import { filePath } from '@src/index';
+import { checkPath } from './checkFile';
 
 export const readJsonFile = async (): Promise<Task[]> => {
-  if (!fs.existsSync(filePath)) {
-    throw new Error('JSON file not found');
+  if (!(await checkPath(filePath))) {
+    throw new Error('JSON file does not exist');
   }
-  const data = await readFile(filePath, 'utf-8');
+  const data = await fs.readFile(filePath, 'utf-8');
   // checking if the json file contains any invalid syntax
   try {
     JSON.parse(data);
@@ -21,8 +18,8 @@ export const readJsonFile = async (): Promise<Task[]> => {
 };
 
 export const writeJsonFile = async (allTasks: Task[]): Promise<void> => {
-  if (!fs.existsSync(filePath)) {
-    throw new Error('JSON file not found');
+  if (!(await checkPath(filePath))) {
+    throw new Error('JSON file does not exist');
   }
-  await writeFile(filePath, JSON.stringify(allTasks, null, 2), 'utf-8');
+  await fs.writeFile(filePath, JSON.stringify(allTasks, null, 2), 'utf-8');
 };
