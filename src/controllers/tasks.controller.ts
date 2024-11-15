@@ -1,6 +1,5 @@
 import { Task, TaskStatus } from '@src/interface/task.type';
 import { v4 as uuidv4 } from 'uuid';
-import { filePath } from '@src/utils/checkFile';
 import { writeJsonFile, readJsonFile } from '@src/utils/jsonOperations';
 
 export const createTask = async (options: Omit<Task, 'status' | 'isArchived'>): Promise<void> => {
@@ -14,11 +13,11 @@ export const createTask = async (options: Omit<Task, 'status' | 'isArchived'>): 
   };
   let tasks = [];
   try {
-    const readJsonRes = await readJsonFile(filePath);
+    const readJsonRes = await readJsonFile();
     tasks = readJsonRes;
     tasks.push(newTask);
 
-    await writeJsonFile(filePath, tasks);
+    await writeJsonFile(tasks);
     console.log('New Task Added: ');
     console.log(newTask);
   } catch (error) {

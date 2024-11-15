@@ -1,11 +1,12 @@
 import util from 'util';
 import fs from 'fs';
 import { Task } from '@src/interface/task.type';
+import { filePath } from './checkFile';
 
 const writeFile = util.promisify(fs.writeFile);
 const readFile = util.promisify(fs.readFile);
 
-export const readJsonFile = async (filePath: string): Promise<Task[]> => {
+export const readJsonFile = async (): Promise<Task[]> => {
   if (!fs.existsSync(filePath)) {
     throw new Error('JSON file not found');
   }
@@ -19,7 +20,7 @@ export const readJsonFile = async (filePath: string): Promise<Task[]> => {
   return data ? JSON.parse(data) : [];
 };
 
-export const writeJsonFile = async (filePath: string, allTasks: Task[]): Promise<void> => {
+export const writeJsonFile = async (allTasks: Task[]): Promise<void> => {
   if (!fs.existsSync(filePath)) {
     throw new Error('JSON file not found');
   }
