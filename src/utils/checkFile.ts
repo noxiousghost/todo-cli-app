@@ -1,15 +1,30 @@
-import fs from 'fs';
-import path from 'path';
+import { promises as fs } from 'fs';
 
-export const dirPath = path.resolve(__dirname, '@src/jsons/');
-export const filePath = path.join(dirPath, '/tasks.json');
-
-export const checkFilePath = (): void => {
-  // create folder and file if they doesn't already exists
-  if (!fs.existsSync(dirPath)) {
-    fs.mkdirSync(dirPath);
+/** Takes in a path argument and checks if that file or folder exists or not
+ *
+ * @param path Path for folder or file
+ */
+export const checkPath = async (path: string): Promise<boolean> => {
+  try {
+    await fs.access(path);
+    return true;
+  } catch (_err: unknown) {
+    return false;
   }
-  if (!fs.existsSync(filePath)) {
-    fs.writeFileSync(filePath, JSON.stringify([]));
+};
+
+/** Takes in dirPath and filePath, and creates folder or file as necessary
+ *
+ * @param dirPath Path for directory in which JSON file exists
+ * @param filePath Path for JSON file
+ */
+export const handleStorageExist = async (dirPath: string, filePath: string): Promise<void> => {
+  const doesFolderExist = await checkPath(dirPath);
+  if (!doesFolderExist) {
+    await fs.mkdir(dirPath);
+  }
+  const doesFileExist = await checkPath(filePath);
+  if (!doesFileExist) {
+    await fs.writeFile(filePath, JSON.stringify([]));
   }
 };
