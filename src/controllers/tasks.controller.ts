@@ -2,7 +2,7 @@ import { Task, TaskStatus } from '@src/interface/task.type';
 import { v4 as uuidv4 } from 'uuid';
 import { writeJsonFile, readJsonFile } from '@src/utils/jsonOperations';
 
-export const createTask = async (options: Omit<Task, 'status' | 'isArchived'>): Promise<void> => {
+export const createTask = async (options: Omit<Task, 'id' | 'status' | 'isArchived'>): Promise<void> => {
   const newTask: Task = {
     id: uuidv4(),
     name: options.name,
