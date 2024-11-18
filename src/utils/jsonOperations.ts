@@ -1,5 +1,5 @@
 import { promises as fs } from 'fs';
-import { Task } from '@src/interface/task.type';
+import { Task } from '@src/model/zod.schema';
 import { filePath } from '@src/index';
 import { checkPath } from './checkFile';
 
