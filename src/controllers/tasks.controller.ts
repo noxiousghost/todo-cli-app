@@ -48,9 +48,9 @@ export const viewTasks = async (options: { all: string; archived: string }): Pro
     // displaying all the tasks result
     if (tasks.length > 0) {
       console.log('--------------------------------------------------------------');
-      tasks.forEach((task) => {
+      tasks.forEach((task, index) => {
         console.log(
-          `- ${task.name} (Status: ${task.status}, Deadline: ${task.deadline}, Tags: ${task.tags.join(', ')})\n`,
+          `${index + 1})  ${task.name} (Status: ${task.status}, Deadline: ${task.deadline}, Tags: ${task.tags.join(', ')})\n`,
         );
       });
       console.log('--------------------------------------------------------------');
