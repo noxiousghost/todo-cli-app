@@ -15,11 +15,7 @@ const compat = new FlatCompat({
 });
 
 export default [
-  ...compat.extends(
-    'plugin:prettier/recommended',
-    'eslint:recommended',
-    'plugin:@typescript-eslint/recommended',
-  ),
+  ...compat.extends('plugin:prettier/recommended', 'eslint:recommended', 'plugin:@typescript-eslint/recommended'),
   {
     plugins: {
       '@typescript-eslint': typescriptEslint,
@@ -43,14 +39,25 @@ export default [
           endOfLine: 'auto',
         },
       ],
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          args: 'all',
+          argsIgnorePattern: '^_',
+          caughtErrors: 'all',
+          caughtErrorsIgnorePattern: '^_',
+          destructuredArrayIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          ignoreRestSiblings: true,
+        },
+      ],
       eqeqeq: 'error',
       curly: 'error',
-      'no-unused-vars': 'warn',
       semi: ['error', 'always'],
-      // 'no-console': 'warn',
       'prefer-const': 'error',
       '@typescript-eslint/explicit-function-return-type': 'warn',
       '@typescript-eslint/no-explicit-any': 'error',
     },
+    ignores: ['node_modules', '/dist/*'],
   },
 ];

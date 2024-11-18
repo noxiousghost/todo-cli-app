@@ -5,7 +5,7 @@ This project is for creating a TODO application using CLI by providing appropria
 ## Features
 
 - JSON Based Persistence
-- Vanilla Javascript -> Rewrite later in typescript with proper object schema.
+- Code in typescript with proper object schema.
 - Save a item in todo list with the following properties:
   1. Name
   2. Deadline
@@ -51,3 +51,11 @@ This project is for creating a TODO application using CLI by providing appropria
    ```bash
    npm install
    ```
+
+### Usages
+
+1. Add a new item to todo list:
+
+```bash
+  npm run dev -- add -n "<Task name>" -d "<Task deadline date>" -t "tag1" "tag2" ...
+```
