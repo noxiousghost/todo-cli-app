@@ -32,23 +32,25 @@ export const createTask = async (options: Omit<Task, 'id' | 'status' | 'isArchiv
 export const viewTasks = async (options: FilterTask): Promise<void> => {
   try {
     const tasks = await readJsonFile();
+    // only archived tasks
     if (options.archived) {
-      // only archived tasks
-      displayTasks(tasks.filter((task) => task.isArchived));
-    } else if (options.all) {
-      // all tasks
-      displayTasks(tasks);
-    } else if (options.status) {
-      // filter by status
-      const status = options.status.toUpperCase();
-      displayTasks(tasks.filter((task) => task.status === status));
-    } else if (options.tags) {
-      // filter by tags
-      displayTasks(tasks.filter((task) => options.tags.some((tag) => task.tags.includes(tag))));
-    } else {
-      // default--> show non archived tasks
-      displayTasks(tasks.filter((task) => !task.isArchived));
+      return displayTasks(tasks.filter((task) => task.isArchived));
     }
+    // all tasks
+    if (options.all) {
+      return displayTasks(tasks);
+    }
+    // filter by status
+    if (options.status) {
+      const status = options.status.toUpperCase();
+      return displayTasks(tasks.filter((task) => task.status === status));
+    }
+    // filter by tags
+    if (options.tags) {
+      return displayTasks(tasks.filter((task) => options.tags.some((tag) => task.tags.includes(tag))));
+    }
+    // default--> show non archived tasks
+    displayTasks(tasks.filter((task) => !task.isArchived));
   } catch (error) {
     console.log(error);
   }
