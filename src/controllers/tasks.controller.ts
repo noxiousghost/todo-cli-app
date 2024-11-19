@@ -1,4 +1,4 @@
-import { Task, TaskSchema, TaskStatus } from '@src/model/zod.schema';
+import { Task, TaskSchema, TaskStatus, FilterTask } from '@src/model/zod.schema';
 import { v4 as uuidv4 } from 'uuid';
 import { writeJsonFile, readJsonFile } from '@src/utils/jsonOperations';
 import { displayTasks } from '@src/utils/displayTasks';
@@ -29,7 +29,7 @@ export const createTask = async (options: Omit<Task, 'id' | 'status' | 'isArchiv
   }
 };
 
-export const viewTasks = async (options: { all: string; archived: string }): Promise<void> => {
+export const viewTasks = async (options: FilterTask): Promise<void> => {
   try {
     const tasks = await readJsonFile();
     if (options.archived) {
@@ -38,6 +38,10 @@ export const viewTasks = async (options: { all: string; archived: string }): Pro
     } else if (options.all) {
       // all tasks
       displayTasks(tasks);
+    } else if (options.status) {
+      // filter by status
+      const status = options.status.toUpperCase();
+      displayTasks(tasks.filter((task) => task.status === status));
     } else {
       // default--> show non archived tasks
       displayTasks(tasks.filter((task) => !task.isArchived));
