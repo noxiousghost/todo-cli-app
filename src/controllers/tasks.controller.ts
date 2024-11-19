@@ -13,13 +13,12 @@ export const createTask = async (options: Omit<Task, 'id' | 'status' | 'isArchiv
       tags: options.tags || [],
       isArchived: false,
     };
-    let tasks = [];
     const parsedTask = TaskSchema.safeParse(newTask);
     if (!parsedTask.success) {
       console.error('Validation failed:', parsedTask.error.flatten());
       return;
     }
-    tasks = await readJsonFile();
+    const tasks = await readJsonFile();
     tasks.push(newTask);
 
     await writeJsonFile(tasks);
