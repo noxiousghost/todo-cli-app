@@ -42,6 +42,9 @@ export const viewTasks = async (options: FilterTask): Promise<void> => {
       // filter by status
       const status = options.status.toUpperCase();
       displayTasks(tasks.filter((task) => task.status === status));
+    } else if (options.tags) {
+      // filter by tags
+      displayTasks(tasks.filter((task) => options.tags.some((tag) => task.tags.includes(tag))));
     } else {
       // default--> show non archived tasks
       displayTasks(tasks.filter((task) => !task.isArchived));

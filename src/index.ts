@@ -35,6 +35,7 @@ const run = async (): Promise<void> => {
         'complete',
       ]),
     )
+    .option('-t, --tags <tags...>', 'Show all tasks with particular tag')
     .action(viewTasks)
     .showHelpAfterError();
 
