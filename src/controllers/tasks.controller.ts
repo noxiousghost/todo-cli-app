@@ -1,7 +1,7 @@
 import { Task, TaskSchema, TaskStatus } from '@src/model/zod.schema';
 import { v4 as uuidv4 } from 'uuid';
 import { writeJsonFile, readJsonFile } from '@src/utils/jsonOperations';
-import { error } from 'console';
+import { displayTasks } from '@src/utils/displayTasks';
 
 export const createTask = async (options: Omit<Task, 'id' | 'status' | 'isArchived'>): Promise<void> => {
   try {
@@ -20,7 +20,6 @@ export const createTask = async (options: Omit<Task, 'id' | 'status' | 'isArchiv
       return;
     }
     tasks = await readJsonFile();
-    // tasks = readJsonRes;
     tasks.push(newTask);
 
     await writeJsonFile(tasks);
@@ -33,29 +32,16 @@ export const createTask = async (options: Omit<Task, 'id' | 'status' | 'isArchiv
 
 export const viewTasks = async (options: { all: string; archived: string }): Promise<void> => {
   try {
-    if (Object.keys(options).length === 0) {
-      throw error('No options provided');
-    }
-    let tasks = [];
-    tasks = await readJsonFile();
-    // checking if task is archived or not
+    const tasks = await readJsonFile();
     if (options.archived) {
-      tasks = tasks.filter((task) => task.isArchived);
+      // only archived tasks
+      displayTasks(tasks.filter((task) => task.isArchived));
     } else if (options.all) {
-      tasks = tasks.filter((task) => !task.isArchived);
-    }
-
-    // displaying all the tasks result
-    if (tasks.length > 0) {
-      console.log('--------------------------------------------------------------');
-      tasks.forEach((task, index) => {
-        console.log(
-          `${index + 1})  ${task.name} (Status: ${task.status}, Deadline: ${task.deadline}, Tags: ${task.tags.join(', ')})\n`,
-        );
-      });
-      console.log('--------------------------------------------------------------');
+      // all tasks
+      displayTasks(tasks);
     } else {
-      console.log('No tasks found!!');
+      // default--> show non archived tasks
+      displayTasks(tasks.filter((task) => !task.isArchived));
     }
   } catch (error) {
     console.log(error);
