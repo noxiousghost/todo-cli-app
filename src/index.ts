@@ -1,5 +1,5 @@
 import { Command } from 'commander';
-import { createTask } from '@src/controllers/tasks.controller';
+import { createTask, viewTasks } from '@src/controllers/tasks.controller';
 import { handleStorageExist } from '@src/utils/checkFile';
 import path from 'path';
 
@@ -22,6 +22,14 @@ const run = async (): Promise<void> => {
     .requiredOption('-d, --deadline <string>', 'Task deadline (YYYY-MM-DD)')
     .option('-t, --tags <tags...>', 'List of tags')
     .action(createTask);
+
+  program
+    .command('show')
+    .description('View items in the list')
+    .option('-a, --all', 'Show all non-archived tasks')
+    .option('-ar, --archived', 'Show all archived tasks')
+    .action(viewTasks)
+    .showHelpAfterError();
 
   program.parse(process.argv);
 };
