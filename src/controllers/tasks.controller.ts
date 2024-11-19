@@ -32,16 +32,19 @@ export const createTask = async (options: Omit<Task, 'id' | 'status' | 'isArchiv
 export const viewTasks = async (options: { all: string; archived: string }): Promise<void> => {
   try {
     const tasks = await readJsonFile();
+    console.log(typeof options);
+    console.log(typeof options.archived);
+    console.log(typeof options.all);
+    // only archived tasks
     if (options.archived) {
-      // only archived tasks
-      displayTasks(tasks.filter((task) => task.isArchived));
-    } else if (options.all) {
-      // all tasks
-      displayTasks(tasks);
-    } else {
-      // default--> show non archived tasks
-      displayTasks(tasks.filter((task) => !task.isArchived));
+      return displayTasks(tasks.filter((task) => task.isArchived));
     }
+    // all tasks
+    if (options.all) {
+      return displayTasks(tasks);
+    }
+    // default--> show non archived tasks
+    displayTasks(tasks.filter((task) => !task.isArchived));
   } catch (error) {
     console.log(error);
   }
