@@ -1,5 +1,5 @@
 import { Task } from '@src/model/zod.schema';
-export const displayTasks = (tasks: Task[]) => {
+export const displayTasks = (tasks: Task[]): void => {
   if (tasks.length === 0) {
     console.log('No tasks found.');
     return;
