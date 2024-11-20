@@ -90,6 +90,33 @@ export const deleteTask = async (options: { id: string; complete: string }): Pro
       ? console.log(`${numberOfDeletedItems} Item(s) deleted successfully:`)
       : console.log('Task not deleted');
   } catch (error) {
+    console.log(error);
+  }
+};
+
+export const modifyTask = async (id: string, options: { status: string }): Promise<void> => {
+  try {
+    const tasks = await readJsonFile();
+    const filteredTasks = tasks.filter((task) => task.id === id);
+
+    if (filteredTasks.length === 0) {
+      console.log('No task found with the given ID.');
+      return;
+    }
+
+    const task = filteredTasks[0];
+    // change status
+    if (options.status) {
+      const newStatus = options.status.toUpperCase() as keyof typeof TaskStatus; // convert the newStatus string into a key of the TaskStatus enum
+      if (task.status === newStatus) {
+        console.log(`Task is already ${options.status}.`);
+        return;
+      }
+      task.status = TaskStatus[newStatus]; // gets the corresponding value from the TaskStatus enum
+      console.log(`Task status updated to ${options.status.toUpperCase()}.`);
+    }
+    await writeJsonFile(tasks);
+  } catch (error) {
     console.error(error);
   }
 };
