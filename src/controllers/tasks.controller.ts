@@ -53,7 +53,6 @@ export const viewTasks = async (options: FilterTask): Promise<void> => {
     if (options.deadline) {
       const today = new Date();
       today.setUTCHours(0, 0, 0, 0);
-      console.log(today);
       return displayTasks(
         tasks.filter((task) => {
           const taskDeadline = new Date(task.deadline);
