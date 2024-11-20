@@ -1,3 +1,5 @@
+import * as readline from 'node:readline/promises';
+import { stdin as input, stdout as output } from 'node:process';
 import { Task, TaskSchema, TaskStatus, FilterTask } from '@src/model/zod.schema';
 import { v4 as uuidv4 } from 'uuid';
 import { writeJsonFile, readJsonFile } from '@src/utils/jsonOperations';
@@ -69,23 +71,37 @@ export const viewTasks = async (options: FilterTask): Promise<void> => {
 };
 
 export const deleteTask = async (options: { id: string; complete: string }): Promise<void> => {
-  let tasksAfterDelete: Task[] = [];
-  const tasks = await readJsonFile();
-  // remove a task with particular id
-  if (options.id) {
-    tasksAfterDelete = tasks.filter((task) => {
-      return options.id !== task.id;
-    });
+  try {
+    let tasksAfterDelete: Task[] = [];
+    const tasks = await readJsonFile();
+    // remove a task with particular id
+    if (options.id) {
+      tasksAfterDelete = tasks.filter((task) => {
+        return options.id !== task.id;
+      });
+    }
+    // removes all the tasks with complete status
+    if (options.complete) {
+      tasksAfterDelete = tasks.filter((task) => {
+        return TaskStatus.COMPLETE !== task.status;
+      });
+    }
+    const numberOfDeletedItems = tasks.length - tasksAfterDelete.length;
+    await writeJsonFile(tasksAfterDelete);
+    return numberOfDeletedItems > 0
+      ? console.log(`${numberOfDeletedItems} Item(s) deleted successfully:`)
+      : console.log('Task not deleted');
+  } catch (error) {
+    console.log(error);
   }
-  // removes all the tasks with complete status
-  if (options.complete) {
-    tasksAfterDelete = tasks.filter((task) => {
-      return TaskStatus.COMPLETE !== task.status;
-    });
+};
+
+export const modifyTask = async (id: string, options: { status: string; archive: string }): Promise<void> => {
+  console.log(id);
+  if (options.status) {
+    const rl = readline.createInterface({ input, output });
+    const answer = await rl.question('What do you think of Node.js? ');
+    console.log(`Thank you for your valuable feedback: ${answer}`);
+    rl.close();
   }
-  const numberOfDeletedItems = tasks.length - tasksAfterDelete.length;
-  await writeJsonFile(tasksAfterDelete);
-  return numberOfDeletedItems > 0
-    ? console.log(`${numberOfDeletedItems} Item(s) deleted successfully:`)
-    : console.log('Task not deleted');
 };
