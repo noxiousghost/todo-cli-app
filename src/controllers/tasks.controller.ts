@@ -53,7 +53,6 @@ export const viewTasks = async (options: FilterTask): Promise<void> => {
     if (options.deadline) {
       const today = new Date();
       today.setUTCHours(0, 0, 0, 0);
-      console.log(today);
       return displayTasks(
         tasks.filter((task) => {
           const taskDeadline = new Date(task.deadline);
@@ -67,4 +66,26 @@ export const viewTasks = async (options: FilterTask): Promise<void> => {
   } catch (error) {
     console.log(error);
   }
+};
+
+export const deleteTask = async (options: { id: string; complete: string }): Promise<void> => {
+  let tasksAfterDelete: Task[] = [];
+  const tasks = await readJsonFile();
+  // remove a task with particular id
+  if (options.id) {
+    tasksAfterDelete = tasks.filter((task) => {
+      return options.id !== task.id;
+    });
+  }
+  // removes all the tasks with complete status
+  if (options.complete) {
+    tasksAfterDelete = tasks.filter((task) => {
+      return 'COMPLETE' !== task.status;
+    });
+  }
+  const numberOfDeletedItems = tasks.length - tasksAfterDelete.length;
+  await writeJsonFile(tasksAfterDelete);
+  return numberOfDeletedItems > 0
+    ? console.log(`${numberOfDeletedItems} Item(s) deleted successfully:`)
+    : console.log('Task not deleted');
 };
