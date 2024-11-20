@@ -49,6 +49,19 @@ export const viewTasks = async (options: FilterTask): Promise<void> => {
     if (options.tags) {
       return displayTasks(tasks.filter((task) => options.tags.some((tag) => task.tags.includes(tag))));
     }
+    // filter by deadline
+    if (options.deadline) {
+      const today = new Date();
+      today.setUTCHours(0, 0, 0, 0);
+      console.log(today);
+      return displayTasks(
+        tasks.filter((task) => {
+          const taskDeadline = new Date(task.deadline);
+          taskDeadline.setUTCHours(0, 0, 0, 0);
+          return taskDeadline.getTime() === today.getTime();
+        }),
+      );
+    }
     // default--> show non archived tasks
     displayTasks(tasks.filter((task) => !task.isArchived));
   } catch (error) {

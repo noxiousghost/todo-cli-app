@@ -36,6 +36,7 @@ const run = async (): Promise<void> => {
       ]),
     )
     .option('-t, --tags <tags...>', 'Show all tasks with particular tag')
+    .option('-d, --deadline', 'Show all the tasks with deadline by today')
     .action(viewTasks)
     .showHelpAfterError();
 
