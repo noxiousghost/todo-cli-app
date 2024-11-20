@@ -80,7 +80,7 @@ export const deleteTask = async (options: { id: string; complete: string }): Pro
   // removes all the tasks with complete status
   if (options.complete) {
     tasksAfterDelete = tasks.filter((task) => {
-      return 'COMPLETE' !== task.status;
+      return TaskStatus.COMPLETE !== task.status;
     });
   }
   const numberOfDeletedItems = tasks.length - tasksAfterDelete.length;
