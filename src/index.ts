@@ -58,6 +58,7 @@ const run = async (): Promise<void> => {
         'complete',
       ]),
     )
+    .option('-ar, --archive', 'Toggle the archive status of a task')
     .action(modifyTask)
     .showHelpAfterError();
 

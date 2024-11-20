@@ -94,7 +94,7 @@ export const deleteTask = async (options: { id: string; complete: string }): Pro
   }
 };
 
-export const modifyTask = async (id: string, options: { status: string }): Promise<void> => {
+export const modifyTask = async (id: string, options: { status: string; archive: string }): Promise<void> => {
   try {
     const tasks = await readJsonFile();
     const filteredTasks = tasks.filter((task) => task.id === id);
@@ -114,6 +114,11 @@ export const modifyTask = async (id: string, options: { status: string }): Promi
       }
       task.status = TaskStatus[newStatus]; // gets the corresponding value from the TaskStatus enum
       console.log(`Task status updated to ${options.status.toUpperCase()}.`);
+    }
+    // toggle archive
+    if (options.archive) {
+      task.isArchived = !task.isArchived;
+      console.log(`Task archive status toggled to ${task.isArchived ? 'ARCHIVED' : 'NOT ARCHIVED'}.`);
     }
     await writeJsonFile(tasks);
   } catch (error) {
