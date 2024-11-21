@@ -1,7 +1,7 @@
 import { Task, TaskSchema, TaskStatus, FilterTask } from '@src/model/zod.schema';
 import { v4 as uuidv4 } from 'uuid';
 import { writeJsonFile, readJsonFile } from '@src/utils/jsonOperations';
-import { displayTasks } from '@src/utils/displayTasks';
+import { displayOneTask, displayTasks, logError, logInfo, logSuccess, logWarning } from '@src/utils/displayOutputs';
 
 export const createTask = async (options: Omit<Task, 'id' | 'status' | 'isArchived'>): Promise<void> => {
   try {
@@ -15,17 +15,19 @@ export const createTask = async (options: Omit<Task, 'id' | 'status' | 'isArchiv
     };
     const parsedTask = TaskSchema.safeParse(newTask);
     if (!parsedTask.success) {
-      console.error('Validation failed:', parsedTask.error.flatten());
+      logError(parsedTask.error.errors.map((e) => e.message).join(', '));
       return;
     }
     const tasks = await readJsonFile();
     tasks.push(newTask);
 
     await writeJsonFile(tasks);
-    console.log('New Task Added: ');
-    console.log(newTask);
-  } catch (error) {
-    console.error(error);
+    logSuccess('New Task Added: ');
+    displayOneTask(newTask);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      logError(error.message);
+    }
   }
 };
 
@@ -63,8 +65,10 @@ export const viewTasks = async (options: FilterTask): Promise<void> => {
     }
     // default--> show non archived tasks
     displayTasks(tasks.filter((task) => !task.isArchived));
-  } catch (error) {
-    console.log(error);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      logError(error.message);
+    }
   }
 };
 
@@ -87,10 +91,12 @@ export const deleteTask = async (options: { id: string; complete: string }): Pro
     const numberOfDeletedItems = tasks.length - tasksAfterDelete.length;
     await writeJsonFile(tasksAfterDelete);
     return numberOfDeletedItems > 0
-      ? console.log(`${numberOfDeletedItems} Item(s) deleted successfully:`)
-      : console.log('Task not deleted');
-  } catch (error) {
-    console.log(error);
+      ? logSuccess(`${numberOfDeletedItems} Item(s) deleted successfully:`)
+      : logError('Task not deleted');
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      logError(error.message);
+    }
   }
 };
 
@@ -100,7 +106,7 @@ export const modifyTask = async (id: string, options: { status: string; archive:
     const filteredTasks = tasks.filter((task) => task.id === id);
 
     if (filteredTasks.length === 0) {
-      console.log('No task found with the given ID.');
+      logWarning('No task found with the given ID.');
       return;
     }
 
@@ -109,20 +115,22 @@ export const modifyTask = async (id: string, options: { status: string; archive:
     if (options.status) {
       const newStatus = options.status.toUpperCase() as keyof typeof TaskStatus; // convert the newStatus string into a key of the TaskStatus enum
       if (task.status === newStatus) {
-        console.log(`Task is already ${options.status}.`);
+        logInfo(`Task is already ${options.status}.`);
         return;
       }
       task.status = TaskStatus[newStatus]; // gets the corresponding value from the TaskStatus enum
-      console.log(`Task status updated to ${options.status.toUpperCase()}.`);
+      logSuccess(`Task status updated to ${options.status.toUpperCase()}.`);
     }
     // toggle archive
     if (options.archive) {
       task.isArchived = !task.isArchived;
-      console.log(`Task archive status toggled to ${task.isArchived ? 'ARCHIVED' : 'NOT ARCHIVED'}.`);
+      logSuccess(`Task archive status toggled to ${task.isArchived ? 'ARCHIVED' : 'NOT ARCHIVED'}.`);
     }
     await writeJsonFile(tasks);
-  } catch (error) {
-    console.error(error);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      logError(error.message);
+    }
   }
 };
 
@@ -131,7 +139,9 @@ export const searchTask = async (title: string): Promise<void> => {
     const tasks = await readJsonFile();
     const regex = new RegExp(title, 'i'); // 'i' flag for case-insensitive search
     displayTasks(tasks.filter((task) => regex.test(task.name)));
-  } catch (error) {
-    console.error(error);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      logError(error.message);
+    }
   }
 };
