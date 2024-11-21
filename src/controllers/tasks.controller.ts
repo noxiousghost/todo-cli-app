@@ -125,3 +125,14 @@ export const modifyTask = async (id: string, options: { status: string; archive:
     console.error(error);
   }
 };
+
+export const searchTask = async (title: string): Promise<void> => {
+  try {
+    const tasks = await readJsonFile();
+    const regex = new RegExp(title, 'i'); // 'i' flag for case-insensitive search
+    const searchResult = tasks.filter((task) => regex.test(task.name));
+    console.log(searchResult);
+  } catch (error) {
+    console.error(error);
+  }
+};
