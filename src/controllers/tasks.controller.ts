@@ -130,8 +130,7 @@ export const searchTask = async (title: string): Promise<void> => {
   try {
     const tasks = await readJsonFile();
     const regex = new RegExp(title, 'i'); // 'i' flag for case-insensitive search
-    const searchResult = tasks.filter((task) => regex.test(task.name));
-    console.log(searchResult);
+    displayTasks(tasks.filter((task) => regex.test(task.name)));
   } catch (error) {
     console.error(error);
   }
