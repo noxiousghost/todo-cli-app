@@ -211,7 +211,8 @@ Note: If on windows, make sure you execute this command from bash shell (like gi
   todo-cli show
 ```
 
-The commands and options are same as discussed in [run the application in developement mode](#run-the-application-in-development-environment) section. You just have to replace `npm run dev` with `todo-cli`. It is possible to change the name of the application from _todo-cli_ to anything you like. For that you just have to modify the bin configuration in package.json file as.
+The commands and options are same as discussed in [run the application in development mode](#run-the-application-in-development-environment) section. You just have to replace `npm run dev --` with `todo-cli`.
+It is possible to change the name of the application from _todo-cli_ to anything you like. For that you just have to modify the bin configuration in package.json file as.
 
 ```package.json
   "bin": {
