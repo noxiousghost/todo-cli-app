@@ -28,3 +28,14 @@ find "$TARGET_DIR" -mindepth 2 -type f -print0 | while IFS= read -r -d '' file; 
 done
 
 echo "Replacement completed."
+
+# Provide executable permission to index.js
+INDEX_FILE="$TARGET_DIR/index.js"
+if [ -f "$INDEX_FILE" ]; then
+    chmod +x "$INDEX_FILE"
+    echo "Executable permission granted for: $INDEX_FILE"
+else
+    echo "Warning: $INDEX_FILE not found. Skipping chmod."
+fi
+
+echo "DONE!!"
