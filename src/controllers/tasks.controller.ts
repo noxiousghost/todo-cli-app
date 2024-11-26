@@ -1,7 +1,7 @@
 import { Task, TaskSchema, TaskStatus, FilterTask } from '@src/model/zod.schema';
 import { v4 as uuidv4 } from 'uuid';
 import { writeJsonFile, readJsonFile } from '@src/utils/jsonOperations';
-import Logger from '@src/utils/displayOutputs';
+import { logger } from '@src/utils/displayOutputs';
 
 export const createTask = async (options: Omit<Task, 'id' | 'status' | 'isArchived'>): Promise<void> => {
   try {
@@ -15,18 +15,18 @@ export const createTask = async (options: Omit<Task, 'id' | 'status' | 'isArchiv
     };
     const parsedTask = TaskSchema.safeParse(newTask);
     if (!parsedTask.success) {
-      Logger.error(parsedTask.error.errors.map((e) => e.message).join(', '));
+      logger.error(parsedTask.error.errors.map((e) => e.message).join(', '));
       return;
     }
     const tasks = await readJsonFile();
     tasks.push(newTask);
 
     await writeJsonFile(tasks);
-    Logger.success('New Task Added: ');
-    Logger.displayOneTask(newTask);
+    logger.success('New Task Added: ');
+    logger.displayOneTask(newTask);
   } catch (error: unknown) {
     if (error instanceof Error) {
-      Logger.error(error.message);
+      logger.error(error.message);
     }
   }
 };
@@ -36,26 +36,26 @@ export const viewTasks = async (options: FilterTask): Promise<void> => {
     const tasks = await readJsonFile();
     // only archived tasks
     if (options.archived) {
-      return Logger.displayTasks(tasks.filter((task) => task.isArchived));
+      return logger.displayTasks(tasks.filter((task) => task.isArchived));
     }
     // all tasks
     if (options.all) {
-      return Logger.displayTasks(tasks);
+      return logger.displayTasks(tasks);
     }
     // filter by status
     if (options.status) {
       const status = options.status.toUpperCase();
-      return Logger.displayTasks(tasks.filter((task) => task.status === status));
+      return logger.displayTasks(tasks.filter((task) => task.status === status));
     }
     // filter by tags
     if (options.tags) {
-      return Logger.displayTasks(tasks.filter((task) => options.tags.some((tag) => task.tags.includes(tag))));
+      return logger.displayTasks(tasks.filter((task) => options.tags.some((tag) => task.tags.includes(tag))));
     }
     // filter by deadline
     if (options.deadline) {
       const today = new Date();
       today.setUTCHours(0, 0, 0, 0);
-      return Logger.displayTasks(
+      return logger.displayTasks(
         tasks.filter((task) => {
           const taskDeadline = new Date(task.deadline);
           taskDeadline.setUTCHours(0, 0, 0, 0);
@@ -64,10 +64,10 @@ export const viewTasks = async (options: FilterTask): Promise<void> => {
       );
     }
     // default--> show non archived tasks
-    Logger.displayTasks(tasks.filter((task) => !task.isArchived));
+    logger.displayTasks(tasks.filter((task) => !task.isArchived));
   } catch (error: unknown) {
     if (error instanceof Error) {
-      Logger.error(error.message);
+      logger.error(error.message);
     }
   }
 };
@@ -91,11 +91,11 @@ export const deleteTask = async (options: { id: string; complete: string }): Pro
     const numberOfDeletedItems = tasks.length - tasksAfterDelete.length;
     await writeJsonFile(tasksAfterDelete);
     return numberOfDeletedItems > 0
-      ? Logger.success(`${numberOfDeletedItems} Item(s) deleted successfully:`)
-      : Logger.error('Task not deleted');
+      ? logger.success(`${numberOfDeletedItems} Item(s) deleted successfully:`)
+      : logger.error('Task not deleted');
   } catch (error: unknown) {
     if (error instanceof Error) {
-      Logger.error(error.message);
+      logger.error(error.message);
     }
   }
 };
@@ -106,7 +106,7 @@ export const modifyTask = async (id: string, options: { status: string; archive:
     const filteredTasks = tasks.filter((task) => task.id === id);
 
     if (filteredTasks.length === 0) {
-      Logger.warning('No task found with the given ID.');
+      logger.warning('No task found with the given ID.');
       return;
     }
 
@@ -115,21 +115,21 @@ export const modifyTask = async (id: string, options: { status: string; archive:
     if (options.status) {
       const newStatus = options.status.toUpperCase() as keyof typeof TaskStatus; // convert the newStatus string into a key of the TaskStatus enum
       if (task.status === newStatus) {
-        Logger.info(`Task is already ${options.status}.`);
+        logger.info(`Task is already ${options.status}.`);
         return;
       }
       task.status = TaskStatus[newStatus]; // gets the corresponding value from the TaskStatus enum
-      Logger.success(`Task status updated to ${options.status.toUpperCase()}.`);
+      logger.success(`Task status updated to ${options.status.toUpperCase()}.`);
     }
     // toggle archive
     if (options.archive) {
       task.isArchived = !task.isArchived;
-      Logger.success(`Task archive status toggled to ${task.isArchived ? 'ARCHIVED' : 'NOT ARCHIVED'}.`);
+      logger.success(`Task archive status toggled to ${task.isArchived ? 'ARCHIVED' : 'NOT ARCHIVED'}.`);
     }
     await writeJsonFile(tasks);
   } catch (error: unknown) {
     if (error instanceof Error) {
-      Logger.error(error.message);
+      logger.error(error.message);
     }
   }
 };
@@ -138,10 +138,10 @@ export const searchTask = async (title: string): Promise<void> => {
   try {
     const tasks = await readJsonFile();
     const regex = new RegExp(title, 'i'); // 'i' flag for case-insensitive search
-    Logger.displayTasks(tasks.filter((task) => regex.test(task.name)));
+    logger.displayTasks(tasks.filter((task) => regex.test(task.name)));
   } catch (error: unknown) {
     if (error instanceof Error) {
-      Logger.error(error.message);
+      logger.error(error.message);
     }
   }
 };

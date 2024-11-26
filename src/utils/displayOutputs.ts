@@ -1,24 +1,24 @@
 import { Task } from '@src/model/zod.schema';
 import chalk from 'chalk';
 
-export default class Logger {
-  static error = (message: string): void => {
+class Logger {
+  error = (message: string): void => {
     console.log(chalk.red.bold(`❌ ERROR: ${message}`));
   };
 
-  static success = (message: string): void => {
+  success = (message: string): void => {
     console.log(chalk.green.bold(`✅ SUCCESS: ${message}`));
   };
 
-  static info = (message: string): void => {
+  info = (message: string): void => {
     console.log(chalk.blue.bold(`ℹ️ INFO: ${message}`));
   };
 
-  static warning = (message: string): void => {
+  warning = (message: string): void => {
     console.log(chalk.yellow.bold(`⚠️ WARNING: ${message}`));
   };
 
-  static displayOneTask = (task: Task): void => {
+  displayOneTask = (task: Task): void => {
     console.log(
       chalk.cyanBright.bold(`\n📌 Task ID: ${task.id}`),
       `\n${chalk.yellow.bold('Name:')} ${task.name}`,
@@ -28,7 +28,7 @@ export default class Logger {
     );
   };
 
-  static displayTasks = (tasks: Task[]): void => {
+  displayTasks = (tasks: Task[]): void => {
     if (!tasks.length) {
       this.error('No tasks found.');
       return;
@@ -46,3 +46,6 @@ export default class Logger {
     });
   };
 }
+
+const logger = new Logger();
+export { logger };
