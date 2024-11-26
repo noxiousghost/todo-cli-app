@@ -129,8 +129,13 @@ export const modifyTask = async (id: string, options: { status: string; archive:
 export const searchTask = async (title: string): Promise<void> => {
   try {
     const tasks = await readJsonFile();
-    const regex = new RegExp(title, 'i'); // 'i' flag for case-insensitive search
-    displayTasks(tasks.filter((task) => regex.test(task.name)));
+    // replace multiple spaces with one space and trim leading and trailing space
+    const sanitizedSearchTitle = title.replace(/\s+/g, ' ').trim().toLowerCase();
+    const searchTitleWords = sanitizedSearchTitle.split(' ');
+    const filteredTasks = tasks.filter((task) => {
+      return searchTitleWords.every((word) => task.name.toLowerCase().includes(word));
+    });
+    displayTasks(filteredTasks);
   } catch (error) {
     console.error(error);
   }
