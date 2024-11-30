@@ -97,14 +97,13 @@ export const deleteTask = async (options: { id: string; complete: string }): Pro
 export const modifyTask = async (id: string, options: { status: string; archive: string }): Promise<void> => {
   try {
     const tasks = await readJsonFile();
-    const filteredTasks = tasks.filter((task) => task.id === id);
+    const task = tasks.find((task) => task.id === id);
 
-    if (filteredTasks.length === 0) {
+    if (!task) {
       console.log('No task found with the given ID.');
       return;
     }
 
-    const task = filteredTasks[0];
     // change status
     if (options.status) {
       const newStatus = options.status.toUpperCase() as keyof typeof TaskStatus; // convert the newStatus string into a key of the TaskStatus enum
