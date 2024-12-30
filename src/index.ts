@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import { Command, Option } from 'commander';
 import { createTask, viewTasks, deleteTask, modifyTask, searchTask } from '@src/controllers/tasks.controller';
 import { handleStorageExist } from '@src/utils/checkFile';

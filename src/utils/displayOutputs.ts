@@ -2,6 +2,10 @@ import { Task } from '@src/model/zod.schema';
 import chalk from 'chalk';
 
 class Logger {
+  /** Takes in error message of type string and formats it while displaying in the console.
+   *
+   * @param message a string of error message.
+   */
   error = (message: string): void => {
     console.log(chalk.red.bold(`❌ ERROR: ${message}`));
   };
