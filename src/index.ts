@@ -1,4 +1,4 @@
-import { Command } from 'commander';
+import { Command, Option } from 'commander';
 import { createTask, viewTasks } from '@src/controllers/tasks.controller';
 import { handleStorageExist } from '@src/utils/checkFile';
 import path from 'path';
@@ -28,6 +28,15 @@ const run = async (): Promise<void> => {
     .description('View items in the list')
     .option('-a, --all', 'Show all non-archived tasks')
     .option('-ar, --archived', 'Show all archived tasks')
+    .addOption(
+      new Option('-s, --status <status>', 'Show all tasks with particular status').choices([
+        'in_progress',
+        'todo',
+        'complete',
+      ]),
+    )
+    .option('-t, --tags <tags...>', 'Show all tasks with particular tag')
+    .option('-d, --deadline', 'Show all the tasks with deadline by today')
     .action(viewTasks)
     .showHelpAfterError();
 

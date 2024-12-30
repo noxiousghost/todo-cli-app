@@ -17,4 +17,14 @@ export const TaskSchema = z.object({
   isArchived: z.boolean(),
 });
 
+export const FilterTaskSchema = z.object({
+  all: z.string(),
+  archived: z.string(),
+  tags: z.array(z.string()),
+  status: z.nativeEnum(TaskStatus),
+  deadline: z.enum(['today', 'week', 'month']),
+});
+
+export type FilterTask = z.infer<typeof FilterTaskSchema>;
+
 export type Task = z.infer<typeof TaskSchema>;

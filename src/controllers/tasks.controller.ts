@@ -1,4 +1,4 @@
-import { Task, TaskSchema, TaskStatus } from '@src/model/zod.schema';
+import { Task, TaskSchema, TaskStatus, FilterTask } from '@src/model/zod.schema';
 import { v4 as uuidv4 } from 'uuid';
 import { writeJsonFile, readJsonFile } from '@src/utils/jsonOperations';
 import { displayTasks } from '@src/utils/displayTasks';
@@ -29,7 +29,7 @@ export const createTask = async (options: Omit<Task, 'id' | 'status' | 'isArchiv
   }
 };
 
-export const viewTasks = async (options: { all: string; archived: string }): Promise<void> => {
+export const viewTasks = async (options: FilterTask): Promise<void> => {
   try {
     const tasks = await readJsonFile();
     // only archived tasks
@@ -39,6 +39,27 @@ export const viewTasks = async (options: { all: string; archived: string }): Pro
     // all tasks
     if (options.all) {
       return displayTasks(tasks);
+    }
+    // filter by status
+    if (options.status) {
+      const status = options.status.toUpperCase();
+      return displayTasks(tasks.filter((task) => task.status === status));
+    }
+    // filter by tags
+    if (options.tags) {
+      return displayTasks(tasks.filter((task) => options.tags.some((tag) => task.tags.includes(tag))));
+    }
+    // filter by deadline
+    if (options.deadline) {
+      const today = new Date();
+      today.setUTCHours(0, 0, 0, 0);
+      return displayTasks(
+        tasks.filter((task) => {
+          const taskDeadline = new Date(task.deadline);
+          taskDeadline.setUTCHours(0, 0, 0, 0);
+          return taskDeadline.getTime() === today.getTime();
+        }),
+      );
     }
     // default--> show non archived tasks
     displayTasks(tasks.filter((task) => !task.isArchived));
