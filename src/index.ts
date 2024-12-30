@@ -1,5 +1,5 @@
 import { Command, Option } from 'commander';
-import { createTask, viewTasks, deleteTask } from '@src/controllers/tasks.controller';
+import { createTask, viewTasks, deleteTask, modifyTask } from '@src/controllers/tasks.controller';
 import { handleStorageExist } from '@src/utils/checkFile';
 import path from 'path';
 
@@ -46,6 +46,20 @@ const run = async (): Promise<void> => {
     .option('-i, --id <id>', 'Delete task with particular id')
     .option('-c, --complete', 'Delete all tasks with complete status')
     .action(deleteTask)
+    .showHelpAfterError();
+
+  program
+    .command('modify <id>')
+    .description('Modify the status and archive state of a task')
+    .addOption(
+      new Option('-s, --status <status>', 'Show all tasks with particular status').choices([
+        'in_progress',
+        'todo',
+        'complete',
+      ]),
+    )
+    .option('-ar, --archive', 'Toggle the archive status of a task')
+    .action(modifyTask)
     .showHelpAfterError();
 
   program.parse(process.argv);
