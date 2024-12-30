@@ -1,5 +1,5 @@
 import { Command, Option } from 'commander';
-import { createTask, viewTasks, deleteTask, modifyTask } from '@src/controllers/tasks.controller';
+import { createTask, viewTasks, deleteTask, modifyTask, searchTask } from '@src/controllers/tasks.controller';
 import { handleStorageExist } from '@src/utils/checkFile';
 import path from 'path';
 
@@ -61,6 +61,8 @@ const run = async (): Promise<void> => {
     .option('-ar, --archive', 'Toggle the archive status of a task')
     .action(modifyTask)
     .showHelpAfterError();
+
+  program.command('search <title>').description('Search the tasks by title').action(searchTask).showHelpAfterError();
 
   program.parse(process.argv);
 };
