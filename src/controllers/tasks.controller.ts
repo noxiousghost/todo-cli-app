@@ -126,14 +126,13 @@ export const deleteTask = async (options: { id: string; complete: string }): Pro
 export const modifyTask = async (id: string, options: { status: string; archive: string }): Promise<void> => {
   try {
     const tasks = await readJsonFile();
-    const filteredTasks = tasks.filter((task) => task.id === id);
+    const task = tasks.find((task) => task.id === id);
 
     if (filteredTasks.length === 0) {
       logger.warning('No task found with the given ID.');
       return;
     }
 
-    const task = filteredTasks[0];
     // change status
     if (options.status) {
       const newStatus = options.status.toUpperCase() as keyof typeof TaskStatus; // convert the newStatus string into a key of the TaskStatus enum
@@ -165,11 +164,14 @@ export const modifyTask = async (id: string, options: { status: string; archive:
 export const searchTask = async (title: string): Promise<void> => {
   try {
     const tasks = await readJsonFile();
-    const regex = new RegExp(title, 'i'); // 'i' flag for case-insensitive search
-    logger.displayTasks(tasks.filter((task) => regex.test(task.name)));
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      logger.error(error.message);
-    }
+    // replace multiple spaces with one space and trim leading and trailing space
+    const sanitizedSearchTitle = title.replace(/\s+/g, ' ').trim().toLowerCase();
+    const searchTitleWords = sanitizedSearchTitle.split(' ');
+    const filteredTasks = tasks.filter((task) => {
+      return searchTitleWords.every((word) => task.name.toLowerCase().includes(word));
+    });
+    displayTasks(filteredTasks);
+  } catch (error) {
+    console.error(error);
   }
 };
