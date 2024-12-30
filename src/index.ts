@@ -1,5 +1,5 @@
 import { Command, Option } from 'commander';
-import { createTask, viewTasks } from '@src/controllers/tasks.controller';
+import { createTask, viewTasks, deleteTask } from '@src/controllers/tasks.controller';
 import { handleStorageExist } from '@src/utils/checkFile';
 import path from 'path';
 
@@ -38,6 +38,14 @@ const run = async (): Promise<void> => {
     .option('-t, --tags <tags...>', 'Show all tasks with particular tag')
     .option('-d, --deadline', 'Show all the tasks with deadline by today')
     .action(viewTasks)
+    .showHelpAfterError();
+
+  program
+    .command('delete')
+    .description('Delete tasks from the list')
+    .option('-i, --id <id>', 'Delete task with particular id')
+    .option('-c, --complete', 'Delete all tasks with complete status')
+    .action(deleteTask)
     .showHelpAfterError();
 
   program.parse(process.argv);
