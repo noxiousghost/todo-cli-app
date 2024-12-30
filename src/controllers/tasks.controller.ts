@@ -1,8 +1,13 @@
 import { Task, TaskSchema, TaskStatus, FilterTask } from '@src/model/zod.schema';
 import { v4 as uuidv4 } from 'uuid';
 import { writeJsonFile, readJsonFile } from '@src/utils/jsonOperations';
-import { displayTasks } from '@src/utils/displayTasks';
+import { logger } from '@src/utils/displayOutputs';
 
+/** Function to create a new Task after taking options from the CLI. Accepted params are name, deadline and tags and they are required.
+ * It also checks and validate the new task before checking by the help of zod safeParse method.
+ *
+ * @param options name:string, deadline:date and tags:string[]
+ */
 export const createTask = async (options: Omit<Task, 'id' | 'status' | 'isArchived'>): Promise<void> => {
   try {
     const newTask: Task = {
@@ -15,45 +20,53 @@ export const createTask = async (options: Omit<Task, 'id' | 'status' | 'isArchiv
     };
     const parsedTask = TaskSchema.safeParse(newTask);
     if (!parsedTask.success) {
-      console.error('Validation failed:', parsedTask.error.flatten());
+      logger.error(parsedTask.error.errors.map((e) => e.message).join(', '));
       return;
     }
     const tasks = await readJsonFile();
     tasks.push(newTask);
 
     await writeJsonFile(tasks);
-    console.log('New Task Added: ');
-    console.log(newTask);
-  } catch (error) {
-    console.error(error);
+    logger.success('New Task Added: ');
+    logger.displayOneTask(newTask);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      logger.error(error.message);
+    }
   }
 };
 
+/** Function that takes an type FilterTask and used to view and filter tasks based on the CLI command. It is in early return pattern checking
+ * for valid filtering options first and if no options are passed then all tasks are displayed.
+ * Refer to the project docs to see the valid options.
+ *
+ * @param options FilterTask
+ */
 export const viewTasks = async (options: FilterTask): Promise<void> => {
   try {
     const tasks = await readJsonFile();
     // only archived tasks
     if (options.archived) {
-      return displayTasks(tasks.filter((task) => task.isArchived));
+      return logger.displayTasks(tasks.filter((task) => task.isArchived));
     }
     // all tasks
     if (options.all) {
-      return displayTasks(tasks);
+      return logger.displayTasks(tasks);
     }
     // filter by status
     if (options.status) {
       const status = options.status.toUpperCase();
-      return displayTasks(tasks.filter((task) => task.status === status));
+      return logger.displayTasks(tasks.filter((task) => task.status === status));
     }
     // filter by tags
     if (options.tags) {
-      return displayTasks(tasks.filter((task) => options.tags.some((tag) => task.tags.includes(tag))));
+      return logger.displayTasks(tasks.filter((task) => options.tags.some((tag) => task.tags.includes(tag))));
     }
     // filter by deadline
     if (options.deadline) {
       const today = new Date();
       today.setUTCHours(0, 0, 0, 0);
-      return displayTasks(
+      return logger.displayTasks(
         tasks.filter((task) => {
           const taskDeadline = new Date(task.deadline);
           taskDeadline.setUTCHours(0, 0, 0, 0);
@@ -62,12 +75,20 @@ export const viewTasks = async (options: FilterTask): Promise<void> => {
       );
     }
     // default--> show non archived tasks
-    displayTasks(tasks.filter((task) => !task.isArchived));
-  } catch (error) {
-    console.log(error);
+    logger.displayTasks(tasks.filter((task) => !task.isArchived));
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      logger.error(error.message);
+    }
   }
 };
 
+/** Function that takes an object options with id and complete and used delete the task(s) from the list.
+ * id is the valid id of a task and complete means all the tasks that are with complete status.
+ * Refer to the project docs for more details about this feature.
+ *
+ * @param options id:string complete:string
+ */
 export const deleteTask = async (options: { id: string; complete: string }): Promise<void> => {
   try {
     let tasksAfterDelete: Task[] = [];
@@ -87,20 +108,28 @@ export const deleteTask = async (options: { id: string; complete: string }): Pro
     const numberOfDeletedItems = tasks.length - tasksAfterDelete.length;
     await writeJsonFile(tasksAfterDelete);
     return numberOfDeletedItems > 0
-      ? console.log(`${numberOfDeletedItems} Item(s) deleted successfully:`)
-      : console.log('Task not deleted');
-  } catch (error) {
-    console.log(error);
+      ? logger.success(`${numberOfDeletedItems} Item(s) deleted successfully:`)
+      : logger.error('Task not deleted');
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      logger.error(error.message);
+    }
   }
 };
 
+/** Function that takes id and options object with status and archive properties and used to modify the task details.
+ * Currently, it is possible to edit the status and archive status of task.
+ *
+ * @param id actual task id:string
+ * @param options status:string archive: string
+ */
 export const modifyTask = async (id: string, options: { status: string; archive: string }): Promise<void> => {
   try {
     const tasks = await readJsonFile();
     const task = tasks.find((task) => task.id === id);
 
-    if (!task) {
-      console.log('No task found with the given ID.');
+    if (filteredTasks.length === 0) {
+      logger.warning('No task found with the given ID.');
       return;
     }
 
@@ -108,23 +137,30 @@ export const modifyTask = async (id: string, options: { status: string; archive:
     if (options.status) {
       const newStatus = options.status.toUpperCase() as keyof typeof TaskStatus; // convert the newStatus string into a key of the TaskStatus enum
       if (task.status === newStatus) {
-        console.log(`Task is already ${options.status}.`);
+        logger.info(`Task is already ${options.status}.`);
         return;
       }
       task.status = TaskStatus[newStatus]; // gets the corresponding value from the TaskStatus enum
-      console.log(`Task status updated to ${options.status.toUpperCase()}.`);
+      logger.success(`Task status updated to ${options.status.toUpperCase()}.`);
     }
     // toggle archive
     if (options.archive) {
       task.isArchived = !task.isArchived;
-      console.log(`Task archive status toggled to ${task.isArchived ? 'ARCHIVED' : 'NOT ARCHIVED'}.`);
+      logger.success(`Task archive status toggled to ${task.isArchived ? 'ARCHIVED' : 'NOT ARCHIVED'}.`);
     }
     await writeJsonFile(tasks);
-  } catch (error) {
-    console.error(error);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      logger.error(error.message);
+    }
   }
 };
 
+/** Function that takes title of type string to search for tasks in the list. It uses regex.test method to display all the tasks that pass the
+ * regex pattern as specified by the user.
+ *
+ * @param title string
+ */
 export const searchTask = async (title: string): Promise<void> => {
   try {
     const tasks = await readJsonFile();
